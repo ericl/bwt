@@ -1,0 +1,7 @@
+a.out
+out.fasta
+out*
+.tmp*
+callgrind.*
+bwt
+*.fasta
