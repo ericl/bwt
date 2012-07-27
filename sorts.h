@@ -1,16 +1,20 @@
-#ifndef SORTS_H
-#define SORTS_H
+// Copyright 2012 Eric Liang
 
-#include <iostream>
-#include <fstream>
+#ifndef SORTS_H_
+#define SORTS_H_
+
 #include <inttypes.h>
 #include <time.h>
 #include <memory.h>
 
-using namespace std;
+#include <iostream>
+#include <fstream>
+
+using std::ostream;
+using std::string;
 
 class triplet {
-public:
+ public:
     uint32_t arr[3];
     uint32_t label;
 
@@ -26,4 +30,4 @@ public:
 void char_sort_to(const char *base, size_t sz, char *output);
 void lsd_sort(triplet *T, size_t sz);
 
-#endif
+#endif  // SORTS_H_

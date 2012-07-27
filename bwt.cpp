@@ -1,26 +1,30 @@
+// Copyright 2012 Eric Liang
+
 #include <iostream>
 #include <assert.h>
+
 #include "fasta.h"
 #include "bwt.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
 
 int main(int argc, char **argv) {
-    assert (argc > 1);
+    assert(argc > 1);
     string op = string(argv[1]);
 
     if (!op.compare("-test")) {
-        string *input = read_fasta((char*)"sonnet1.fasta");
+        string *input = read_fasta(const_cast<char*>("sonnet1.fasta"));
         string *input_bwt = bwt(input);
         string *input_ibwt = ibwt(input_bwt);
-        string *output = read_fasta((char*)"sonnet1.bwt.fasta");
-        assert (*input_bwt == *output);
-        assert (*input_ibwt == *input);
+        string *output = read_fasta(const_cast<char*>("sonnet1.bwt.fasta"));
+        assert(*input_bwt == *output);
+        assert(*input_ibwt == *input);
         cout << "OK" << endl;
         exit(0);
     }
 
-    assert (argc == 4);
+    assert(argc == 4);
     bool invert = false;
 
     if (!op.compare("-bwt")) {
@@ -28,7 +32,7 @@ int main(int argc, char **argv) {
     } else if (!op.compare("-ibwt")) {
         invert = true;
     } else {
-        assert (!"unknown op");
+        assert(!"unknown op");
     }
 
     string *input = read_fasta(argv[2]);
@@ -39,7 +43,7 @@ int main(int argc, char **argv) {
     } else {
         write_fasta(output, bwt(input), "BWT of " + string(argv[2]));
     }
-	return 0;
+    return 0;
 }
 
 string *bwt(string *input) {
@@ -49,7 +53,7 @@ string *bwt(string *input) {
     /* construct bwt from suffix array */
     char *bwt = new char[input->length()];
     char *orig = bwt;
-    for (size_t i=1; i <= input->length(); i++) {
+    for (size_t i = 1; i <= input->length(); i++) {
         if (sa[i] > 0) {
             *bwt++ = input->at(sa[i] - 1);
         } else {
@@ -68,7 +72,7 @@ string *ibwt(string *L) {
     /* marks first occurrence of char in F */
     int32_t M[256];
     memset(M, 0xff, sizeof(int32_t)*256);
-    for (size_t i=0; i < L->length(); i++) {
+    for (size_t i = 0; i < L->length(); i++) {
         uint8_t k = F[i];
         if (M[k] < 0) {
             M[k] = i;
@@ -79,7 +83,7 @@ string *ibwt(string *L) {
     uint32_t tmp[256];
     memset(tmp, 0, sizeof(int32_t)*256);
     memset(C, 0, sizeof(uint32_t)*L->length());
-    for (size_t i=0; i < L->length(); i++) {
+    for (size_t i = 0; i < L->length(); i++) {
         uint8_t k = (*L)[i];
         C[i] = tmp[k]++;
     }
@@ -89,7 +93,7 @@ string *ibwt(string *L) {
     char *ptr = buf + L->length() - 1;
     *ptr-- = F[0];
     uint32_t j = 0;
-    for (size_t i=1; i < L->length(); i++) {
+    for (size_t i = 1; i < L->length(); i++) {
         *ptr-- = (*L)[j];
         j = M[(uint8_t)(*L)[j]] + C[j];
     }

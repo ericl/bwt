@@ -1,6 +1,6 @@
-#include "sorts.h"
+// Copyright 2012 Eric Liang
 
-using namespace std;
+#include "sorts.h"
 
 triplet::triplet(uint32_t a, uint32_t b, uint32_t c) {
     arr[0] = a;
@@ -52,15 +52,15 @@ void char_sort_to(const char *base, size_t sz, char *output) {
         const char *ptr = base + i;
         buckets[(uint8_t)ptr[0]]++;
     }
-    for (size_t i=0; i < 256; i++) {
-        memset(output, (char)i, buckets[i]);
+    for (uint16_t i = 0; i < 256; i++) {
+        memset(output, static_cast<char>(i), buckets[i]);
         output += buckets[i];
     }
 }
 
 bool all_zeros(triplet *T, size_t sz, int pass) {
-    for (size_t i=0; i < sz; i++) {
-        uint8_t *arr = (uint8_t*)T[i].arr;
+    for (size_t i = 0; i < sz; i++) {
+        uint8_t *arr = reinterpret_cast<uint8_t*>(T[i].arr);
         if (arr[pass] != 0) {
             return false;
         }
@@ -69,28 +69,28 @@ bool all_zeros(triplet *T, size_t sz, int pass) {
 }
 
 void lsd_sort(triplet *T, size_t sz) {
-    int passes[] = {8,9,10,11,4,5,6,7,0,1,2,3};
+    int passes[] = {8, 9, 10, 11, 4, 5, 6, 7, 0, 1, 2, 3};
     triplet *old = T;
     triplet *tmp = new triplet[sz];
 
     // precompute bucket sizes for good cache locality
     uint32_t buckets[256 * 12];
     memset(buckets, 0, sizeof(uint32_t) * 256 * 12);
-    for (size_t i=0; i < sz; i++) {
-        uint8_t *arr = (uint8_t*)T[i].arr;
-        for (int p=0; p < 12; p++) {
+    for (size_t i = 0; i < sz; i++) {
+        uint8_t *arr = reinterpret_cast<uint8_t*>(T[i].arr);
+        for (int p = 0; p < 12; p++) {
             buckets[(p << 8) + arr[p]]++;
         }
     }
 
-    for (int p=0; p < 12; p++) {
+    for (int p = 0; p < 12; p++) {
         int col = passes[p];
 
         // set up bucket pointers
         triplet* bptrs[256];
         triplet *U = tmp;
         bool allsame = false;
-        for (int i=0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
             uint32_t *base = buckets + (col << 8);
             uint32_t count = base[i];
             if (count == sz) {
@@ -106,8 +106,8 @@ void lsd_sort(triplet *T, size_t sz) {
         }
 
         // push into buckets
-        for (size_t i=0; i < sz; i++) {
-            uint8_t *arr = (uint8_t*)old[i].arr;
+        for (size_t i = 0; i < sz; i++) {
+            uint8_t *arr = reinterpret_cast<uint8_t*>(old[i].arr);
             *bptrs[arr[col]]++ = old[i];
         }
 
@@ -115,7 +115,7 @@ void lsd_sort(triplet *T, size_t sz) {
         tmp = old;
         old = swap;
     }
-    
+
     if (old != T) {
         memcpy(T, old, sz * sizeof(triplet));
         delete[] old;

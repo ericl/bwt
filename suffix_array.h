@@ -1,26 +1,29 @@
-#ifndef SUFFIX_ARR_H
-#define SUFFIX_ARR_H
+// Copyright 2012 Eric Liang
 
-#include <inttypes.h>
-#include <algorithm>
+#ifndef SUFFIX_ARRAY_H_
+#define SUFFIX_ARRAY_H_
+
 #include <assert.h>
+#include <inttypes.h>
+
+#include <algorithm>
+#include <string>
+
 #include "sorts.h"
 
-using namespace std;
-
 #define DC3_MIN_CHARS 5
-//#define DEBUG
+// #define DEBUG
 #ifdef DEBUG
-#define vprint(x,v,sz)\
+#define vprint(x, v, sz)\
     cout << x << " ";\
-    for (size_t i=0; i < sz; i++) {\
+    for (size_t i = 0; i < sz; i++) {\
         cout << v[i] << " ";\
     }\
     cout << endl;
 #else
-#define vprint(x,v,sz)
+#define vprint(x, v, sz)
 #endif
 
 uint32_t *gen_suffix_array(string *input, size_t *retsz);
 
-#endif
+#endif  // SUFFIX_ARRAY_H_

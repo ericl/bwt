@@ -1,16 +1,19 @@
-#ifndef FASTA_H
-#define FASTA_H
+// Copyright 2012 Eric Liang
+
+#ifndef FASTA_H_
+#define FASTA_H_
 
 #define NEWLINE 0
 #define LINE 1
 #define COMMENT 2
 
-#include <fstream>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
-using namespace std;
+#include <fstream>
+
+using std::string;
 
 /**
  * Returns string with contents of fasta sequence
@@ -22,4 +25,4 @@ string *read_fasta(char *filepath);
  */
 void write_fasta(string filepath, string *seq, string comment);
 
-#endif
+#endif  // FASTA_H_
