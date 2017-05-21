@@ -15,10 +15,10 @@ int main(int argc, char **argv) {
 
     if (!op.compare("-test")) {
         string *input = read_fasta(const_cast<char*>("sonnet1.fasta"));
-        string *input_bwt = bwt(input);
-        string *input_ibwt = ibwt(input_bwt);
+        string input_bwt = bwt(*input);
+        string *input_ibwt = ibwt(&input_bwt);
         string *output = read_fasta(const_cast<char*>("sonnet1.bwt.fasta"));
-        assert(*input_bwt == *output);
+        assert(input_bwt == *output);
         assert(*input_ibwt == *input);
         cout << "OK" << endl;
         exit(0);
@@ -41,27 +41,29 @@ int main(int argc, char **argv) {
     if (invert) {
         write_fasta(output, ibwt(input), "inverse BWT of " + string(argv[2]));
     } else {
-        write_fasta(output, bwt(input), "BWT of " + string(argv[2]));
+    	string s = bwt(*input);
+        write_fasta(output, &s, "BWT of " + string(argv[2]));
     }
     return 0;
 }
 
-string *bwt(string *input) {
+string bwt(string &input) {
     size_t sz;
     uint32_t *sa = gen_suffix_array(input, &sz);
 
     /* construct bwt from suffix array */
-    char *bwt = new char[input->length()];
+    char *bwt = new char[input.length()];
     char *orig = bwt;
-    for (size_t i = 1; i <= input->length(); i++) {
+    for (size_t i = 1; i <= input.length(); i++) {
         if (sa[i] > 0) {
-            *bwt++ = input->at(sa[i] - 1);
+            *bwt++ = input.at(sa[i] - 1);
         } else {
-            *bwt++ = input->at(input->length() - 1);
+            *bwt++ = input.at(input.length() - 1);
         }
     }
 
-    return new string(orig, bwt - orig);
+    delete[] sa;
+    return std::string(orig, bwt - orig);
 }
 
 string *ibwt(string *L) {

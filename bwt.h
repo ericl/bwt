@@ -12,7 +12,7 @@
 
 using std::string;
 
-string *bwt(string *input);
+string bwt(string &input);
 string *ibwt(string *L);
 
 #endif  // BWT_H_

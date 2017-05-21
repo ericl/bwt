@@ -24,6 +24,6 @@
 #define vprint(x, v, sz)
 #endif
 
-uint32_t *gen_suffix_array(string *input, size_t *retsz);
+uint32_t *gen_suffix_array(string &input, size_t *retsz);
 
 #endif  // SUFFIX_ARRAY_H_
