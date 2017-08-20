@@ -175,12 +175,13 @@ uint32_t *ranks(const char *T, size_t sz) {
     }
 
     delete[] arr;
+    delete[] rank;
     return rr;
 }
 
-uint32_t *gen_suffix_array(string *input, size_t *retsz) {
-    uint32_t *v = ranks(input->c_str(), input->length());
-    uint32_t *sa = idc3(v, input->length(), retsz);
+uint32_t *gen_suffix_array(string &input, size_t *retsz) {
+    uint32_t *v = ranks(input.c_str(), input.length());
+    uint32_t *sa = idc3(v, input.length(), retsz);
     delete[] v;
     return sa;
 }

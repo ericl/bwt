@@ -18,7 +18,7 @@ using std::string;
 /**
  * Returns string with contents of fasta sequence
  */
-string *read_fasta(char *filepath);
+string read_fasta(char *filepath);
 
 /**
  * Writes sequence and comment to output file

@@ -6,7 +6,7 @@ using std::ios;
 using std::ofstream;
 using std::endl;
 
-string *read_fasta(char *filepath) {
+string read_fasta(char *filepath) {
     struct stat st;
     stat(filepath, &st);
 
@@ -52,7 +52,7 @@ string *read_fasta(char *filepath) {
         }
     }
 
-    return new string(data, writeptr - data - 1);
+    return string(data, writeptr - data - 1);
 }
 
 void write_fasta(string filepath, string *seq, string comment) {

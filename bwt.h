@@ -7,12 +7,12 @@
 #include <inttypes.h>
 #include <memory.h>
 
-#include "suffix_array.h"
 #include "sorts.h"
+#include "suffix_array.h"
 
 using std::string;
 
-string *bwt(string *input);
-string *ibwt(string *L);
+string bwt(string& input);
+string ibwt(string *L);
 
 #endif  // BWT_H_

@@ -1,70 +1,80 @@
 // Copyright 2012 Eric Liang
 
+#include "bwt.h"
+#include "fasta.h"
+
 #include <iostream>
 #include <assert.h>
 
-#include "fasta.h"
-#include "bwt.h"
 
 using std::cout;
 using std::endl;
 
 int main(int argc, char **argv) {
-    assert(argc > 1);
-    string op = string(argv[1]);
+   assert(argc > 1);
+   string op = string(argv[1]);
 
-    if (!op.compare("-test")) {
-        string *input = read_fasta(const_cast<char*>("sonnet1.fasta"));
-        string *input_bwt = bwt(input);
-        string *input_ibwt = ibwt(input_bwt);
-        string *output = read_fasta(const_cast<char*>("sonnet1.bwt.fasta"));
-        assert(*input_bwt == *output);
-        assert(*input_ibwt == *input);
-        cout << "OK" << endl;
-        exit(0);
-    }
+   if (!op.compare("-test")) {
+       string input = read_fasta(const_cast<char*>("sonnet1.fasta"));
+       string input_bwt = bwt(input);
+       string input_ibwt = ibwt(&input_bwt);
+       string output = read_fasta(const_cast<char*>("sonnet1.bwt.fasta"));
+       assert(input_bwt == output);
+       assert(input_ibwt == input);
+       cout << "OK" << endl;
+       exit(0);
+   }
 
-    assert(argc == 4);
-    bool invert = false;
+   assert(argc == 4);
+   bool invert = false;
 
-    if (!op.compare("-bwt")) {
-        invert = false;
-    } else if (!op.compare("-ibwt")) {
-        invert = true;
-    } else {
-        assert(!"unknown op");
-    }
+   if (!op.compare("-bwt")) {
+       invert = false;
+   } else if (!op.compare("-ibwt")) {
+       invert = true;
+   } else {
+       assert(!"unknown op");
+   }
 
-    string *input = read_fasta(argv[2]);
-    string output = string(argv[3]);
+   string input = read_fasta(argv[2]);
+   string output = string(argv[3]);
 
-    if (invert) {
-        write_fasta(output, ibwt(input), "inverse BWT of " + string(argv[2]));
-    } else {
-        write_fasta(output, bwt(input), "BWT of " + string(argv[2]));
-    }
-    return 0;
+   string ibwt_input = ibwt(&input);
+   string bwt_input = bwt(input);
+
+   if (invert) {
+       write_fasta(output, &ibwt_input, "inverse BWT of " + string(argv[2]));
+   } else {
+       write_fasta(output, &bwt_input, "BWT of " + string(argv[2]));
+   }
+   return 0;
 }
 
-string *bwt(string *input) {
+string bwt(string& input) {
     size_t sz;
     uint32_t *sa = gen_suffix_array(input, &sz);
 
     /* construct bwt from suffix array */
-    char *bwt = new char[input->length()];
+    char *bwt = new char[input.length()];
     char *orig = bwt;
-    for (size_t i = 1; i <= input->length(); i++) {
+    for (size_t i = 1; i <= input.length(); i++) {
         if (sa[i] > 0) {
-            *bwt++ = input->at(sa[i] - 1);
+            *bwt++ = input.at(sa[i] - 1);
         } else {
-            *bwt++ = input->at(input->length() - 1);
+            *bwt++ = input.at(input.length() - 1);
         }
     }
 
-    return new string(orig, bwt - orig);
+    std::string s(orig, bwt - orig);
+    delete[] sa;
+    bwt = orig;
+    delete[] bwt;
+    orig = nullptr;
+    delete orig;
+    return s;
 }
 
-string *ibwt(string *L) {
+string ibwt(string *L) {
     char *F = new char[L->length()];
     uint32_t *C = new uint32_t[L->length()];
     char_sort_to(L->c_str(), L->length(), F);
@@ -100,8 +110,8 @@ string *ibwt(string *L) {
 
     delete[] F;
     delete[] C;
-    string *s = new string(buf, L->length());
+
+    std::string s(buf, L->length());
     delete[] buf;
     return s;
 }
-
